@@ -1,0 +1,14 @@
+{
+    "name": "psrphp/psr16",
+    "description": "psr16的基本实现",
+    "type": "library",
+    "license": "GPL-3.0",
+    "require": {
+        "psr/simple-cache": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "PsrPHP\\Psr16\\": "src/"
+        }
+    }
+}
