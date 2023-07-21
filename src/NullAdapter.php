@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace PsrPHP\Psr16;
 
+use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 
 class NullAdapter implements CacheInterface
 {
     protected $data = [];
 
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $this->validateKey($key);
         if (isset($this->data[$key]) && (!$this->data[$key]['expire_at'] || $this->data[$key]['expire_at'] >= time())) {
@@ -19,7 +20,7 @@ class NullAdapter implements CacheInterface
         return $default;
     }
 
-    public function set($key, $value, $ttl = null): bool
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
         $this->validateKey($key);
         $this->data[$key] = [
@@ -29,7 +30,7 @@ class NullAdapter implements CacheInterface
         return true;
     }
 
-    public function delete($key): bool
+    public function delete(string $key): bool
     {
         $this->validateKey($key);
         unset($this->data[$key]);
@@ -42,14 +43,14 @@ class NullAdapter implements CacheInterface
         return true;
     }
 
-    public function getMultiple($keys, $default = null): iterable
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
         foreach ($keys as $key) {
             yield $key => $this->get($key, $default);
         }
     }
 
-    public function setMultiple($values, $ttl = null): bool
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             if (!$this->set($key, $value, $ttl)) {
@@ -59,7 +60,7 @@ class NullAdapter implements CacheInterface
         return true;
     }
 
-    public function deleteMultiple($keys): bool
+    public function deleteMultiple(iterable $keys): bool
     {
         foreach ($keys as $key) {
             if (!$this->delete($key)) {
@@ -69,7 +70,7 @@ class NullAdapter implements CacheInterface
         return true;
     }
 
-    public function has($key): bool
+    public function has(string $key): bool
     {
         $this->validateKey($key);
         if (isset($this->data[$key]) && (!$this->data[$key]['expire_at'] || $this->data[$key]['expire_at'] >= time())) {

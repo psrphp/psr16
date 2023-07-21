@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PsrPHP\Psr16;
 
 use Composer\InstalledVersions;
+use DateInterval;
 use Exception;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionClass;
@@ -31,7 +32,7 @@ class LocalAdapter implements CacheInterface
         $this->cache_dir = $cache_dir;
     }
 
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $file = $this->getCacheFile($key);
         try {
@@ -49,7 +50,7 @@ class LocalAdapter implements CacheInterface
         return $cache['value'];
     }
 
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
         $file = $this->getCacheFile($key);
         try {
@@ -64,7 +65,7 @@ class LocalAdapter implements CacheInterface
         }
     }
 
-    public function delete($key)
+    public function delete(string $key): bool
     {
         $file = $this->getCacheFile($key);
         try {
@@ -77,7 +78,7 @@ class LocalAdapter implements CacheInterface
         return true;
     }
 
-    public function clear()
+    public function clear(): bool
     {
         try {
             $tmp = scandir($this->cache_dir);
@@ -100,14 +101,14 @@ class LocalAdapter implements CacheInterface
         return true;
     }
 
-    public function getMultiple($keys, $default = null)
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
         foreach ($keys as $key) {
             yield $key => $this->get($key, $default);
         }
     }
 
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             if (!$this->set($key, $value, $ttl)) {
@@ -117,7 +118,7 @@ class LocalAdapter implements CacheInterface
         return true;
     }
 
-    public function deleteMultiple($keys)
+    public function deleteMultiple(iterable $keys): bool
     {
         foreach ($keys as $key) {
             if (!$this->delete($key)) {
@@ -127,7 +128,7 @@ class LocalAdapter implements CacheInterface
         return true;
     }
 
-    public function has($key)
+    public function has(string $key): bool
     {
         $file = $this->getCacheFile($key);
         try {
@@ -145,7 +146,7 @@ class LocalAdapter implements CacheInterface
         return true;
     }
 
-    private function getCacheFile($key)
+    private function getCacheFile($key): string
     {
         $this->validateKey($key);
         return $this->cache_dir . '/' . $key;
@@ -166,7 +167,5 @@ class LocalAdapter implements CacheInterface
         if ($unsupportedMatched > 0) {
             throw new InvalidArgumentException('Can\'t validate the specified key');
         }
-
-        return true;
     }
 }
